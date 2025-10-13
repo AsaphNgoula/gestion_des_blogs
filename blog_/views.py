@@ -18,10 +18,12 @@ def article_list(request, *args, **kwargs):
 
 # @login_required
 def createArticle(request):
-    form =articleForm(request.POST or None)
+    form =articleForm(request.POST or None,request.FILES or None)
     if form.is_valid():
         form.save()
         form = articleForm()
+
+        return redirect('homepage')
     return render(request, 'articles/create.html', {'form':form})
 
 # @login_required
@@ -48,20 +50,19 @@ def add_commentaire(request, article_id):
                 auteur=request.user,
                 contenu=contenu
             )
-        return redirect('detail_article', article_id=article.id)
+        return redirect('homepage')
     
     return render(request, 'ajouter_commentaire.html', {'article': article})
 
 # @login_required
 def like_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
-    
+
     if request.user in article.likes.all():
         article.likes.remove(request.user)
-        liked = False
     else:
         article.likes.add(request.user)
-        liked = True
 
-    return JsonResponse({'liked': liked, 'total_likes': article.likes.count()})
+    # redirige simplement vers la page d’où vient la requête
+    return redirect(request.META.get('HTTP_REFERER', 'homepage'))
 

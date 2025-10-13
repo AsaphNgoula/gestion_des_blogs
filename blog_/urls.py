@@ -1,12 +1,15 @@
 from django.urls import path
-from .views import article_list,createArticle,updateArticle, add_commentaire
+from .views import article_list,createArticle,updateArticle, add_commentaire,like_article
 
 
 
 
 urlpatterns = [
-      path('homepage', article_list, name='homepage'),
+      path('', article_list, name='homepage'),
       path('create', createArticle, name='create'),
       path('update/<int:article_id>', updateArticle, name='modifier'),
-      path('article/<int:article_id>/commentaire/', add_commentaire, name='add_commentaire'),
+      path('like/<int:article_id>/', like_article, name='like_article'),
+      path('commentaire/<int:article_id>/', add_commentaire, name='add_commentaire'),
 ]
+
+

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
 {% block content %}
 
 <h2>Tous les articles</h2>
@@ -9,11 +9,21 @@
     <p>{{ article.description }}</p>
     <p>Publié par {{ article.auteur.username }} le {{ article.date_publication }}</p>
 
-    <form method="POST" action="{% url 'like_article' article.id %}">
+    <!-- Bouton Like -->
+    <form method="POST" action="{% url 'like_article' article.id %}" style="display:inline;">
         {% csrf_token %}
-        <button type="submit">
-            👍 {{ article.likes.count }} Likes
-        </button>
+        {% if user.is_authenticated %}
+            <button type="submit" style="background:none; border:none; cursor:pointer; font-size:16px;">
+                {% if user in article.likes.all %}
+                    ❤️
+                {% else %}
+                    🤍
+                {% endif %}
+                {{ article.likes.count }} Likes
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}">Connecte-toi pour liker</a>
+        {% endif %}
     </form>
 
     <h4>Commentaires :</h4>
