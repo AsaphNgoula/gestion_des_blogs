@@ -25,9 +25,9 @@ def createArticle(request):
     return render(request, 'articles/create.html', {'form':form})
 
 # @login_required
-def updateArticle(request, my_id):
+def updateArticle(request, article_id):
     messages = ""
-    obj = get_object_or_404(Article, id=my_id)
+    obj = get_object_or_404(Article, id=article_id)
     
     form = articleForm(request.POST or None, instance=obj)
     if form.is_valid():
@@ -52,16 +52,16 @@ def add_commentaire(request, article_id):
     
     return render(request, 'ajouter_commentaire.html', {'article': article})
 
-# @login_required
-def like_article(request, article_id):
-    article = get_object_or_404(Article, id=article_id)
+# # @login_required
+# def like_article(request, article_id):
+#     article = get_object_or_404(Article, id=article_id)
     
-    if request.user in article.likes.all():
-        article.likes.remove(request.user)
-        liked = False
-    else:
-        article.likes.add(request.user)
-        liked = True
+#     if request.user in article.likes.all():
+#         article.likes.remove(request.user)
+#         liked = False
+#     else:
+#         article.likes.add(request.user)
+#         liked = True
 
-    return JsonResponse({'liked': liked, 'total_likes': article.likes.count()})
+#     return JsonResponse({'liked': liked, 'total_likes': article.likes.count()})
 

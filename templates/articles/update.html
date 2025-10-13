@@ -1,7 +1,16 @@
-{% extends '_base.html' %}
-
-
+{% extends "base.html" %}
 {% block content %}
 
+{% if message %}
+<h3 style="color:green;">{{ message }}</h3>
+{% endif %}
+
+<center>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Modifier</button>
+    </form>
+</center>
 
 {% endblock %}

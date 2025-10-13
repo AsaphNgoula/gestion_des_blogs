@@ -4,5 +4,5 @@ from blog_.views import Article
 class articleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = ('titre', 'description', 'auteur', 'image', 'nombre_vues', 'nombre_likes', 'commentaire', 'likes')
+        fields = ('titre', 'description', 'auteur', 'image', 'nombre_vues', 'nombre_likes', 'likes')
         exclude = ['date_publication', 'date_modification']  # Exclure explicitement
