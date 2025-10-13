@@ -25,6 +25,19 @@ def createArticle(request):
     return render(request, 'articles/create.html', {'form':form})
 
 # @login_required
+def updateArticle(request, my_id):
+    messages =""
+    obj = get_object_or_404(Article,id=my_id)
+    form = articleForm(request.POST or None, instance =obj)
+    if form.is_valid():
+       form.save()
+       form = articleForm()
+       messages = 'you are modification was successfuly done'
+    return render(request, 'products/update.html', {'form':form, 'message': messages})
+
+
+
+# @login_required
 def add_commentaire(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     
