@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h3 style="color:green;">{{ message }}</h3>
+<center>
+    <form action="{% url 'create' %}"  method="post">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        <button type="submit">create</button>
+    </form>
+</center>
+{% endblock %}
