@@ -1,14 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Ajouter un commentaire pour : {{ article.titre }}</h2>
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-6 mt-8">
+    <!-- En-tête -->
+    <div class="mb-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Ajouter un commentaire</h2>
+        <p class="text-lg text-gray-600">Pour l'article : <span class="font-semibold text-blue-600">{{ article.titre }}</span></p>
+    </div>
 
-<form method="POST">
-    {% csrf_token %}
-    <textarea name="contenu" rows="4" cols="50" placeholder="Écris ton commentaire ici..."></textarea>
-    <br>
-    <button type="submit">Envoyer</button>
-</form>
+    <!-- Formulaire -->
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Champ de texte -->
+        <div>
+            <label for="contenu" class="block text-sm font-medium text-gray-700 mb-2">
+                Votre commentaire
+            </label>
+            <textarea 
+                id="contenu"
+                name="contenu" 
+                rows="6" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                placeholder="Partagez vos pensées, questions ou retours sur cet article..."
+            ></textarea>
+        </div>
 
-<a href="{% url 'homepage' article.id %}">Retour à l’article</a>
+        <!-- Boutons d'action -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center pt-4">
+            <button 
+                type="submit" 
+                class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 focus:ring-4 focus:ring-blue-200"
+            >
+                <span class="flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                    </svg>
+                    Publier le commentaire
+                </span>
+            </button>
+
+            <a 
+                href="{% url 'homepage' article.id %}" 
+                class="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-all duration-300 text-center"
+            >
+                <span class="flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Retour à l'article
+                </span>
+            </a>
+        </div>
+    </form>
+
+    <!-- Conseils -->
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <h4 class="text-sm font-semibold text-blue-800">Conseils pour un bon commentaire</h4>
+                <p class="text-sm text-blue-600 mt-1">Soyez respectueux, pertinent et constructif dans vos échanges avec la communauté.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

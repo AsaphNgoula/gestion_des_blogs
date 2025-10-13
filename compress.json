@@ -1,0 +1,8 @@
+{
+    "css":[
+        {
+            "src": "static/css/input.css",
+            "output":"staticfiles/css/compressed.css"
+        }
+    ]
+}

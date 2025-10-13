@@ -5,7 +5,7 @@
 
 @plugin "flowbite/plugin";
 
-@plugin "flowbite-typography";
+/* @plugin "flowbite-typography"; */
 
 @source "../../../node_modules/flowbite";
 @source "../../../node_modules/flowbite-datepicker";
