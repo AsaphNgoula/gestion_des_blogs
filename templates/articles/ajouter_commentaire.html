@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Ajouter un commentaire pour : {{ article.titre }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <textarea name="contenu" rows="4" cols="50" placeholder="Écris ton commentaire ici..."></textarea>
+    <br>
+    <button type="submit">Envoyer</button>
+</form>
+
+<a href="{% url 'detail_article' article.id %}">Retour à l’article</a>
+{% endblock %}

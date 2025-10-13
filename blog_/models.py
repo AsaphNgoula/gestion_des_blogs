@@ -14,6 +14,10 @@ class Article(models.Model):
     nombre_vues = models.PositiveIntegerField(default=0)
     nombre_likes = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name='Article'
+        verbose_name_plural='Articles'
+
 
 class Commentaire(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='commentaires')
@@ -25,12 +29,7 @@ class Commentaire(models.Model):
         return f"Commentaire de {self.auteur.username} sur {self.article.titre}"
 
     class Meta:
-        verbose_name='Article'
-        verbose_name_plural='Articles'
         verbose_name='Commentaire'
         verbose_name_plural='Commentaires'
 
-
-    def __str__(self):
-        return self.titre
-
+   

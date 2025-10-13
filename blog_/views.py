@@ -14,7 +14,7 @@ def article_list(request, *args, **kwargs):
     context = {
       'articles': article
         }
-    return render(request, 'articles/detail.html', context)
+    return render(request, 'articles/homepage.html', context)
 
 # @login_required
 def createArticle(request):
@@ -52,16 +52,16 @@ def add_commentaire(request, article_id):
     
     return render(request, 'ajouter_commentaire.html', {'article': article})
 
-# # @login_required
-# def like_article(request, article_id):
-#     article = get_object_or_404(Article, id=article_id)
+# @login_required
+def like_article(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
     
-#     if request.user in article.likes.all():
-#         article.likes.remove(request.user)
-#         liked = False
-#     else:
-#         article.likes.add(request.user)
-#         liked = True
+    if request.user in article.likes.all():
+        article.likes.remove(request.user)
+        liked = False
+    else:
+        article.likes.add(request.user)
+        liked = True
 
-#     return JsonResponse({'liked': liked, 'total_likes': article.likes.count()})
+    return JsonResponse({'liked': liked, 'total_likes': article.likes.count()})
 

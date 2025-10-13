@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tous les articles</h2>
+
+{% for article in articles %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
+    <h3>{{ article.titre }}</h3>
+    <p>{{ article.description }}</p>
+    <p>Publié par {{ article.auteur.username }} le {{ article.date_publication }}</p>
+
+    <form method="POST" action="{% url 'like_article' article.id %}">
+        {% csrf_token %}
+        <button type="submit">
+            👍 {{ article.likes.count }} Likes
+        </button>
+    </form>
+
+    <h4>Commentaires :</h4>
+    {% for c in article.commentaires.all %}
+        <p><strong>{{ c.auteur.username }}</strong> : {{ c.contenu }}</p>
+    {% empty %}
+        <p>Aucun commentaire.</p>
+    {% endfor %}
+
+    <form method="POST" action="{% url 'add_commentaire' article.id %}">
+        {% csrf_token %}
+        <textarea name="contenu" rows="2" cols="40" placeholder="Ton commentaire..."></textarea>
+        <br>
+        <button type="submit">Commenter</button>
+    </form>
+</div>
+{% endfor %}
+
+{% endblock %}
