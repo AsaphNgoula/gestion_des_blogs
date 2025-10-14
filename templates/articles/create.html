@@ -63,56 +63,12 @@
 
                 <!-- Formulaire -->
                 <div class="p-8">
-                    <form action="{% url 'create' %}" method="post" enctype="multipart/form-data" class="space-y-8">
+                    <form action="{% url 'create' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
-                        <div class="grid grid-cols-1 gap-8">
-                            {% for field in form %}
-                            <div class="group">
-                                <label for="{{ field.id_for_label }}" class="flex items-center text-sm font-medium text-white/90 mb-3">
-                                    <span class="bg-white/10 rounded-lg px-2 py-1 text-xs text-white/70 mr-2 border border-white/20">
-                                        {{ forloop.counter }}
-                                    </span>
-                                    {{ field.label }}
-                                    {% if field.field.required %}
-                                    <span class="text-red-400 ml-1">*</span>
-                                    {% endif %}
-                                </label>
-                                
-                                <div class="relative">
-                                    {{ field }}
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                                    </div>
-                                </div>
-                                
-                                {% if field.help_text %}
-                                <p class="mt-2 text-xs text-white/50 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    {{ field.help_text }}
-                                </p>
-                                {% endif %}
-                                
-                                {% if field.errors %}
-                                <div class="mt-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                                    <div class="flex items-center space-x-2 text-red-300 text-sm">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <div class="space-y-1">
-                                            {% for error in field.errors %}
-                                            <p class="text-xs">• {{ error }}</p>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-
+                        <!-- Votre code de formulaire original ici -->
+                        {{ form.as_p }}
+                        
                         <!-- Actions -->
                         <div class="flex items-center justify-between pt-6 border-t border-white/10">
                             <a href="#" class="inline-flex items-center text-white/70 hover:text-white transition-colors group">
@@ -168,13 +124,23 @@
 </div>
 
 <style>
-    /* Styles premium pour les champs du formulaire */
+    /* Styles pour les champs du formulaire Django */
     input, textarea, select {
-        @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:bg-white/10 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200 backdrop-blur-sm;
+        @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:bg-white/10 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200 backdrop-blur-sm mt-2;
+    }
+
+    /* Style pour les labels */
+    label {
+        @apply block text-sm font-medium text-white/90 mb-2;
+    }
+
+    /* Style pour les paragraphes du formulaire Django */
+    form p {
+        @apply mb-6;
     }
 
     input[type="file"] {
-        @apply bg-white/5 border-dashed border-white/20 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30 transition-colors;
+        @apply bg-white/5 border-dashed border-white/20;
     }
 
     input[type="checkbox"] {
@@ -191,52 +157,11 @@
         background-repeat: no-repeat;
         background-size: 1.5em 1.5em;
         padding-right: 2.5rem;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
     }
 
-    /* Animation d'entrée pour les éléments */
-    .form-element {
-        animation: slideUp 0.5s ease-out forwards;
-        opacity: 0;
-        transform: translateY(20px);
+    /* Style pour le bouton de soumission */
+    button[type="submit"] {
+        @apply group relative inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-2xl hover:shadow-purple-500/25 hover:from-purple-500 hover:to-blue-500 transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden;
     }
-
-    @keyframes slideUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Délai d'animation pour chaque élément */
-    {% for field in form %}
-    .form-element:nth-child({{ forloop.counter }}) {
-        animation-delay: {{ forloop.counter|add:"0.1" }}s;
-    }
-    {% endfor %}
 </style>
-
-<script>
-    // Animation d'entrée
-    document.addEventListener('DOMContentLoaded', function() {
-        const elements = document.querySelectorAll('.group');
-        elements.forEach((element, index) => {
-            element.style.animationDelay = `${(index + 1) * 0.1}s`;
-            element.classList.add('form-element');
-        });
-    });
-
-    // Effet de focus amélioré
-    const inputs = document.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('ring-2', 'ring-purple-500/30', 'rounded-xl');
-        });
-        
-        input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('ring-2', 'ring-purple-500/30', 'rounded-xl');
-        });
-    });
-</script>
 {% endblock %}

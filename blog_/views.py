@@ -4,6 +4,8 @@ from .models import Article,Commentaire
 from .form import articleForm
 from django.contrib.auth.decorators import login_required
 
+
+
  
 
 
@@ -65,4 +67,18 @@ def like_article(request, article_id):
 
     # redirige simplement vers la page d’où vient la requête
     return redirect(request.META.get('HTTP_REFERER', 'homepage'))
+
+def register(request):
+    form = UserForm()
+    if request.method=='POST':
+        form = UserForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'votre compte a ete cree avec succes')
+            return redirect('login')
+        else:
+            messages.error(request, form.errors)
+    return render(request, 'store/register.html', {'form':form})
+
+
 
