@@ -145,6 +145,10 @@ STATICFILES_FINDERS = [  "compressor.finders.CompressorFinder",
                          "django.contrib.staticfiles.finders.AppDirectoriesFinder",
                          ]
 
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = False  # garde False en dev
+
+
 
 
 

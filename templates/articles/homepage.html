@@ -1,45 +1,259 @@
 {% extends '_base.html' %}
 {% block content %}
 
-<h2>Tous les articles</h2>
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <!-- Titre principal -->
+    <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Tous les articles</h2>
 
-{% for article in articles %}
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
-    <h3>{{ article.titre }}</h3>
-    <p>{{ article.description }}</p>
-    <p>Publié par {{ article.auteur.username }} le {{ article.date_publication }}</p>
+    {% for article in articles %}
+    <!-- Carte Article -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6 hover:shadow-xl transition-shadow duration-300">
+        <!-- En-tête de l'article -->
+        <div class="mb-4">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ article.titre }}</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">{{ article.description }}</p>
+        </div>
 
-    <!-- Bouton Like -->
-    <form method="POST" action="{% url 'like_article' article.id %}" style="display:inline;">
-        {% csrf_token %}
-        {% if user.is_authenticated %}
-            <button type="submit" style="background:none; border:none; cursor:pointer; font-size:16px;">
-                {% if user in article.likes.all %}
-                    ❤️
+        <!-- Métadonnées -->
+        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+            <div class="flex items-center space-x-4">
+                <span class="font-medium text-gray-700">Publié par {{ article.auteur.username }}</span>
+                <span>•</span>
+                <span>{{ article.date_publication }}</span>
+            </div>
+        </div>
+
+        <!-- Bouton Like -->
+        <div class="mb-6">
+            <form method="POST" action="{% url 'like_article' article.id %}" class="inline">
+                {% csrf_token %}
+                {% if user.is_authenticated %}
+                    <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-red-50 hover:bg-red-100 rounded-full transition-colors duration-200 group">
+                        {% if user in article.likes.all %}
+                            <span class="text-red-500 text-lg transform group-hover:scale-110 transition-transform">❤️</span>
+                        {% else %}
+                            <span class="text-gray-400 text-lg transform group-hover:scale-110 transition-transform">🤍</span>
+                        {% endif %}
+                        <span class="font-semibold text-gray-700">{{ article.likes.count }} Likes</span>
+                    </button>
                 {% else %}
-                    🤍
+                    <a href="{% url 'login' %}" class="inline-flex items-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-full text-blue-600 font-semibold transition-colors duration-200">
+                        <span>🔒</span>
+                        <span>Connecte-toi pour liker</span>
+                    </a>
                 {% endif %}
-                {{ article.likes.count }} Likes
-            </button>
-        {% else %}
-            <a href="{% url 'login' %}">Connecte-toi pour liker</a>
-        {% endif %}
-    </form>
+            </form>
+        </div>
 
-    <h4>Commentaires :</h4>
-    {% for c in article.commentaires.all %}
-        <p><strong>{{ c.auteur.username }}</strong> : {{ c.contenu }}</p>
-    {% empty %}
-        <p>Aucun commentaire.</p>
+        <!-- Section Commentaires -->
+        <div class="border-t border-gray-200 pt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-semibold text-gray-900">Commentaires</h4>
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm font-medium">
+                    {{ article.commentaires.count }}
+                </span>
+            </div>
+            
+            <!-- Bouton pour afficher/masquer TOUS les commentaires -->
+            {% if article.commentaires.count > 0 %}
+            <div class="mb-4">
+                <button onclick="toggleAllComments({{ article.id }})" 
+                        id="toggle-all-comments-{{ article.id }}"
+                        class="flex items-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-600 font-semibold transition-colors duration-200 w-full justify-center">
+                    <span id="toggle-icon-{{ article.id }}">👁️</span>
+                    <span id="toggle-text-{{ article.id }}">Voir les commentaires</span>
+                </button>
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4 bg-gray-50 rounded-lg">Aucun commentaire pour le moment.</p>
+            {% endif %}
+
+            <!-- Tous les commentaires (cachés par défaut) -->
+            <div id="all-comments-{{ article.id }}" class="hidden space-y-3">
+                {% for c in article.commentaires.all %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                            {{ c.auteur.username|first|upper }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="font-semibold text-gray-900 truncate">{{ c.auteur.username }}</span>
+                                <span class="text-gray-400 text-sm">•</span>
+                                <span class="text-gray-500 text-sm whitespace-nowrap">{{ c.date_creation|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <p class="text-gray-700 break-words">{{ c.contenu }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Bouton pour afficher le formulaire de commentaire -->
+            <div class="mt-6">
+                <button onclick="toggleCommentForm({{ article.id }})" 
+                        id="comment-btn-{{ article.id }}"
+                        class="flex items-center space-x-2 px-4 py-2 bg-green-50 hover:bg-green-100 rounded-lg text-green-700 font-semibold transition-colors duration-200 w-full justify-center">
+                    <span id="comment-icon-{{ article.id }}">💬</span>
+                    <span id="comment-text-{{ article.id }}">Ajouter un commentaire</span>
+                </button>
+            </div>
+
+            <!-- Formulaire de commentaire (caché par défaut) -->
+            <div id="comment-form-{{ article.id }}" class="hidden mt-4">
+                <form method="POST" action="{% url 'add_commentaire' article.id %}" class="space-y-4">
+                    {% csrf_token %}
+                    <div class="relative">
+                        <textarea name="contenu" rows="3" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none"
+                                placeholder="Partagez votre pensée..."
+                                required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" 
+                                onclick="toggleCommentForm({{ article.id }})"
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200">
+                            Annuler
+                        </button>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 transform hover:scale-105">
+                            Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     {% endfor %}
-
-    <form method="POST" action="{% url 'add_commentaire' article.id %}">
-        {% csrf_token %}
-        <textarea name="contenu" rows="2" cols="40" placeholder="Ton commentaire..."></textarea>
-        <br>
-        <button type="submit">Commenter</button>
-    </form>
 </div>
-{% endfor %}
+
+<script>
+    // Fonction pour afficher/masquer TOUS les commentaires
+    function toggleAllComments(articleId) {
+        const allComments = document.getElementById(`all-comments-${articleId}`);
+        const toggleBtn = document.getElementById(`toggle-all-comments-${articleId}`);
+        const toggleIcon = document.getElementById(`toggle-icon-${articleId}`);
+        const toggleText = document.getElementById(`toggle-text-${articleId}`);
+        
+        if (allComments.classList.contains('hidden')) {
+            // Afficher les commentaires
+            allComments.classList.remove('hidden');
+            allComments.classList.add('block');
+            toggleIcon.textContent = '🙈';
+            toggleText.textContent = 'Masquer les commentaires';
+            toggleBtn.classList.remove('bg-blue-50', 'text-blue-600');
+            toggleBtn.classList.add('bg-gray-100', 'text-gray-700');
+        } else {
+            // Masquer les commentaires
+            allComments.classList.add('hidden');
+            allComments.classList.remove('block');
+            toggleIcon.textContent = '👁️';
+            toggleText.textContent = 'Voir les commentaires';
+            toggleBtn.classList.add('bg-blue-50', 'text-blue-600');
+            toggleBtn.classList.remove('bg-gray-100', 'text-gray-700');
+        }
+    }
+
+    // Fonction pour afficher/masquer le formulaire de commentaire
+    function toggleCommentForm(articleId) {
+        const commentForm = document.getElementById(`comment-form-${articleId}`);
+        const commentBtn = document.getElementById(`comment-btn-${articleId}`);
+        const commentIcon = document.getElementById(`comment-icon-${articleId}`);
+        const commentText = document.getElementById(`comment-text-${articleId}`);
+        
+        if (commentForm.classList.contains('hidden')) {
+            // Afficher le formulaire
+            commentForm.classList.remove('hidden');
+            commentForm.classList.add('block');
+            commentIcon.textContent = '❌';
+            commentText.textContent = 'Annuler';
+            commentBtn.classList.remove('bg-green-50', 'text-green-700');
+            commentBtn.classList.add('bg-red-50', 'text-red-700');
+            
+            // Focus sur le textarea
+            const textarea = commentForm.querySelector('textarea');
+            setTimeout(() => {
+                textarea.focus();
+                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        } else {
+            // Masquer le formulaire
+            commentForm.classList.add('hidden');
+            commentForm.classList.remove('block');
+            commentIcon.textContent = '💬';
+            commentText.textContent = 'Ajouter un commentaire';
+            commentBtn.classList.add('bg-green-50', 'text-green-700');
+            commentBtn.classList.remove('bg-red-50', 'text-red-700');
+            
+            // Réinitialiser le textarea
+            const textarea = commentForm.querySelector('textarea');
+            textarea.value = '';
+        }
+    }
+
+    // Gestion de la soumission du formulaire
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[action*="add_commentaire"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const textarea = this.querySelector('textarea');
+                if (textarea.value.trim() === '') {
+                    e.preventDefault();
+                    textarea.focus();
+                    return false;
+                }
+                
+                // Ajouter un indicateur de chargement
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span>Publication...</span>';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+            });
+        });
+    });
+
+    // Fermer le formulaire si on clique en dehors
+    document.addEventListener('click', function(event) {
+        const commentForms = document.querySelectorAll('[id^="comment-form-"]');
+        commentForms.forEach(form => {
+            if (!form.classList.contains('hidden') && !form.contains(event.target)) {
+                const articleId = form.id.split('-')[2];
+                const commentBtn = document.getElementById(`comment-btn-${articleId}`);
+                if (commentBtn && !commentBtn.contains(event.target)) {
+                    toggleCommentForm(articleId);
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    /* Styles personnalisés pour améliorer l'apparence */
+    .bg-white {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .hover\:shadow-xl:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Animation pour l'affichage des commentaires */
+    [id^="all-comments-"] {
+        transition: all 0.3s ease-in-out;
+    }
+    
+    [id^="comment-form-"] {
+        transition: all 0.3s ease-in-out;
+    }
+</style>
 
 {% endblock %}
