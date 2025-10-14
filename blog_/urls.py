@@ -10,7 +10,6 @@ urlpatterns = [
       path('update/<int:article_id>', updateArticle, name='modifier'),
       path('like/<int:article_id>/', like_article, name='like_article'),
       path('commentaire/<int:article_id>/', add_commentaire, name='add_commentaire'),
-      path('register', register,name='register'),
-]
+    path('register/', register, name='register'),]
 
 
