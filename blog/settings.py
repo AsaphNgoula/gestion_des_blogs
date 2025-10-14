@@ -148,6 +148,10 @@ STATICFILES_FINDERS = [  "compressor.finders.CompressorFinder",
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = False  # garde False en dev
 
+LOGIN_REDIRECT_URL = 'homepage'   # ou une autre page de ton site
+LOGOUT_REDIRECT_URL = 'login'
+
+
 
 
 

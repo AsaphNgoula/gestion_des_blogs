@@ -1,0 +1,10 @@
+{%extends '_base.html' %}
+
+{%block content %}
+
+<form action="{% url 'logout' %}"  method="post">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        <button type="submit">create</button>
+</form>
+{% endblock %}

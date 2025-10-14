@@ -5,10 +5,8 @@ from .form import articleForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-
-
-
- 
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
 
 
 # Create your views here.
@@ -20,15 +18,19 @@ def article_list(request, *args, **kwargs):
         }
     return render(request, 'articles/homepage.html', context)
 
+
 # @login_required
 def createArticle(request):
-    form =articleForm(request.POST or None,request.FILES or None)
-    if form.is_valid():
-        form.save()
+    if request.method == 'POST':
+        form = articleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.auteur = request.user  # Associer l'auteur
+            article.save()
+            return redirect('homepage')
+    else:
         form = articleForm()
-
-        return redirect('homepage')
-    return render(request, 'articles/create.html', {'form':form})
+    return render(request, 'articles/create.html', {'form': form})
 
 # @login_required
 def updateArticle(request, article_id):
@@ -79,8 +81,17 @@ def register(request):
             return redirect('login')
     else:
         form = UserCreationForm()
-
     return render(request, 'articles/register.html', {'form': form})
+
+class CustomLoginView(LoginView):
+    template_name = 'login.html'      # nom du template que tu veux utiliser
+    redirect_authenticated_user = True  # si un utilisateur déjà connecté visite /login/, on le redirige
+
+@login_required
+def deconnected(request):
+    logout(request)
+    return redirect('login')
+    
 
 
 
