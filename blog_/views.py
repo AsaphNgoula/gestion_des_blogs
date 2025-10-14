@@ -3,6 +3,8 @@ from django.http import HttpResponse, JsonResponse,Http404
 from .models import Article,Commentaire
 from .form import articleForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 
 
@@ -69,16 +71,15 @@ def like_article(request, article_id):
     return redirect(request.META.get('HTTP_REFERER', 'homepage'))
 
 def register(request):
-    form = UserForm()
-    if request.method=='POST':
-        form = UserForm(data=request.POST)
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'votre compte a ete cree avec succes')
+            messages.success(request, 'Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.')
             return redirect('login')
-        else:
-            messages.error(request, form.errors)
-    return render(request, 'store/register.html', {'form':form})
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
 
 
 
